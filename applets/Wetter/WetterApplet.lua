@@ -74,12 +74,20 @@ local cache = { data = nil, fetched = 0, loading = false, listeners = {} }
 local place = DEFAULT_PLACE
 
 
+-- Mondphase 0–7 (0 = Neumond, 4 = Vollmond), gerechnet ab dem Neumond
+-- vom 6.1.2000 18:14 UTC mit der mittleren Länge des synodischen Monats
+local function moonPhase()
+	local days = (os.time() - 947182440) / 86400
+	local p = (days / 29.530588853) % 1
+	return math.floor(p * 8 + 0.5) % 8
+end
+
 -- WMO-Code -> Symbolname (applets/Wetter/icons/<name>_<größe>.png)
 local function iconName(code, isDay)
 	code = tonumber(code) or -1
 	local day = isDay ~= 0
-	if code <= 1 then return day and "clear_day" or "clear_night" end
-	if code == 2 then return day and "partly_day" or "partly_night" end
+	if code <= 1 then return day and "clear_day" or ("clear_night_m" .. moonPhase()) end
+	if code == 2 then return day and "partly_day" or ("partly_night_m" .. moonPhase()) end
 	if code == 3 then return "cloudy" end
 	if code == 45 or code == 48 then return "fog" end
 	if code >= 51 and code <= 55 then return "drizzle" end

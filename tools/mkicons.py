@@ -24,6 +24,30 @@ def moon(img, cx, cy, r):
     md.ellipse((cx - r + o, cy - r - o * .6, cx + r + o, cy + r - o * .6), fill=0)
     img.paste(Image.new("RGBA", (S, S), MOON), (0, 0), m)
 
+MOON_DARK = (78, 80, 92, 255)
+
+def moon_phase(img, cx, cy, r, i):
+    # Phase i von 8: 0 = Neumond, 2 = erstes Viertel, 4 = Vollmond, 6 = letztes Viertel.
+    # Ansicht wie auf der Nordhalbkugel: zunehmend rechts beleuchtet
+    p = i / 8
+    k = math.cos(2 * math.pi * p)          # 1 = Neumond, -1 = Vollmond
+    lit = Image.new("L", (S, S), 0); ld = ImageDraw.Draw(lit)
+    box = (cx - r, cy - r, cx + r, cy + r)
+    if i != 0:
+        # beleuchtete Hälfte
+        if p < .5:
+            ld.pieslice(box, -90, 90, fill=255)
+        else:
+            ld.pieslice(box, 90, 270, fill=255)
+        # Terminator als Ellipse: Sichel abziehen, Dreiviertel dazunehmen
+        e = abs(k) * r
+        ld.ellipse((cx - e, cy - r, cx + e, cy + r), fill=0 if k > 0 else 255)
+    disc = Image.new("L", (S, S), 0)
+    ImageDraw.Draw(disc).ellipse(box, fill=255)
+    # unbeleuchteter Teil dunkel, damit auch Neumond und Sichel als Scheibe erkennbar sind
+    img.paste(Image.new("RGBA", (S, S), MOON_DARK), (0, 0), disc)
+    img.paste(Image.new("RGBA", (S, S), MOON), (0, 0), lit)
+
 def cloud(d, x, y, w, col):
     # x,y = linke untere Ecke, w = Breite
     h = w * .32
@@ -58,7 +82,14 @@ def bolt(d):
 
 def make(name):
     img = Image.new("RGBA", (S, S), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
-    if name == "clear_day": sun(d, 128, 128, 58)
+    phase = None
+    if "_night_m" in name:
+        name, phase = name.split("_m"); phase = int(phase)
+    if name == "clear_night" and phase is not None: moon_phase(img, 128, 128, 92, phase)
+    elif name == "partly_night" and phase is not None:
+        moon_phase(img, 176, 80, 70, phase)
+        outline_cloud(img, 26, 210, 180, CLOUD)
+    elif name == "clear_day": sun(d, 128, 128, 58)
     elif name == "clear_night": moon(img, 128, 128, 92)
     elif name in ("partly_day", "partly_night"):
         if name == "partly_day": sun(d, 160, 96, 46)
@@ -92,13 +123,15 @@ def make(name):
     return img
 
 names = ["clear_day", "clear_night", "partly_day", "partly_night", "cloudy", "fog", "drizzle", "rain", "showers_day", "snow", "sleet", "thunder"]
+names += [f"{n}_m{i}" for n in ("clear_night", "partly_night") for i in range(8)]
 for n in names:
     im = make(n)
     for size in (64, 30):
         im.resize((size, size), Image.LANCZOS).save(f"icons/{n}_{size}.png")
 # Vorschau auf schwarz
-prev = Image.new("RGBA", (len(names) * 70, 110), (0, 0, 0, 255))
+cols = 12
+prev = Image.new("RGBA", (cols * 70, (len(names) + cols - 1) // cols * 110), (0, 0, 0, 255))
 for i, n in enumerate(names):
     for size, y in ((64, 4), (30, 74)):
-        t = Image.open(f"icons/{n}_{size}.png"); prev.alpha_composite(t, (i * 70 + 3, y))
+        t = Image.open(f"icons/{n}_{size}.png"); prev.alpha_composite(t, (i % cols * 70 + 3, i // cols * 110 + y))
 prev.save("icons_preview.png")
