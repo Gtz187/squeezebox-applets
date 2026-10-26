@@ -2,9 +2,10 @@
 <extension>
   <name>PLUGIN_RADIOAPPLETS</name>
   <module>Plugins::RadioApplets::Plugin</module>
-  <version>1.4</version>
+  <version>1.5</version>
   <description>PLUGIN_RADIOAPPLETS_DESC</description>
   <creator>Götz Jacob</creator>
+  <optionsURL>plugins/RadioApplets/settings/basic.html</optionsURL>
   <defaultState>enabled</defaultState>
   <targetApplication>
     <id>SqueezeCenter</id>

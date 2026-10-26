@@ -4,6 +4,8 @@ package Plugins::RadioApplets::Plugin;
 # Die Zips liegen in applets/, Titel und Versionen in applets/applets.txt
 # (beides erzeugt tools/build.py). Die Liste wird bei jeder
 # Abfrage neu gelesen, neue Versionen brauchen also keinen LMS-Neustart.
+# Dazu liefert es unter /radioapplets/termine.json die nächsten Termine
+# für die Wetter-Uhr (siehe Calendar.pm).
 
 use strict;
 use base qw(Slim::Plugin::Base);
@@ -12,6 +14,8 @@ use Digest::SHA qw(sha1_hex);
 use File::Spec::Functions qw(catdir catfile);
 
 use Slim::Utils::Log;
+
+use Plugins::RadioApplets::Calendar;
 
 my $log = Slim::Utils::Log->addLogCategory({
 	category     => 'plugin.radioapplets',
@@ -27,8 +31,15 @@ sub initPlugin {
 
 	$dir = catdir($class->_pluginDataFor('basedir'), 'applets');
 
+	if (main::WEBUI) {
+		require Plugins::RadioApplets::Settings;
+		Plugins::RadioApplets::Settings->new;
+	}
+
+	Plugins::RadioApplets::Calendar::init();
+
 	Slim::Control::Jive::registerExtensionProvider('RadioApplets', \&_provider);
-	Slim::Web::Pages->addRawFunction('radioapplets/', \&_serveZip);
+	Slim::Web::Pages->addRawFunction('radioapplets/', \&_serve);
 }
 
 sub _readList {
@@ -71,8 +82,18 @@ sub _provider {
 	$args->{cb}->(@{$args->{pt}}, \@res);
 }
 
-sub _serveZip {
+sub _serve {
 	my ($httpClient, $response) = @_;
+
+	if ($response->request->uri->path =~ m{/radioapplets/termine\.json$}) {
+		my $data = Plugins::RadioApplets::Calendar::json();
+		$response->code(200);
+		$response->content_type('application/json; charset=utf-8');
+		$response->header('Content-Length' => length($data));
+		$response->header('Connection' => 'close');
+		Slim::Web::HTTP::addHTTPResponse($httpClient, $response, \$data);
+		return;
+	}
 
 	my ($file) = $response->request->uri->path =~ m{/radioapplets/([\w.-]+\.zip)$};
 	my $data;

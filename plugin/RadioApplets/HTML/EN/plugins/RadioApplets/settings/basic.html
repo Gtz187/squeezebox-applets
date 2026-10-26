@@ -1,0 +1,19 @@
+[% PROCESS settings/header.html %]
+
+	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_CAL_URL" desc="PLUGIN_RADIOAPPLETS_CAL_URL_DESC" %]
+		<input type="text" class="stdedit" name="pref_calUrl" value="[% prefs.pref_calUrl | html %]" size="70" autocomplete="off">
+	[% END %]
+
+	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_CAL_USER" desc="" %]
+		<input type="text" class="stdedit" name="pref_calUser" value="[% prefs.pref_calUser | html %]" size="30" autocomplete="off">
+	[% END %]
+
+	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_CAL_PASS" desc="" %]
+		<input type="password" class="stdedit" name="pref_calPass" value="[% prefs.pref_calPass | html %]" size="30" autocomplete="new-password">
+	[% END %]
+
+	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_CAL_STATUS" desc="" %]
+		[% calStatus | html %]
+	[% END %]
+
+[% PROCESS settings/footer.html %]

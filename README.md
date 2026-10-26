@@ -5,7 +5,7 @@ Plugin für den **Lyrion Music Server (LMS)**:
 
 | Applet | Was es macht |
 |---|---|
-| **Wetter-Uhr** | Menüpunkt „Wetter“ im Hauptmenü und Bildschirmschoner „Wetter-Uhr“: große Uhr, aktuelles Wetter, 3-Tage-Vorhersage mit eigenen Symbolen. Beim Abspielen stehen unten Sender und Titel. Läuft die Eieruhr, zeigt die Uhr die Restzeit. Daten von [Open-Meteo](https://open-meteo.com) (kostenlos, ohne API-Key). **Ort frei wählbar.** |
+| **Wetter-Uhr** | Menüpunkt „Wetter“ im Hauptmenü und Bildschirmschoner „Wetter-Uhr“: große Uhr, aktuelles Wetter, 3-Tage-Vorhersage mit eigenen Symbolen. Beim Abspielen stehen unten Sender und Titel. Läuft die Eieruhr, zeigt die Uhr die Restzeit. Auf Wunsch wechseln sich die nächsten Termine aus einem CalDAV-Kalender mit der Vorhersage ab. Daten von [Open-Meteo](https://open-meteo.com) (kostenlos, ohne API-Key). **Ort frei wählbar.** |
 | **Eieruhr** | Küchentimer: Zeit mit dem Drehrad einstellen (30-s-Schritte unter 10 min, 1 min unter 60 min, darüber 5 min), Rad drücken = Start. Während des Countdowns: Rad = Zeit ändern, drücken = Stopp. Am Ende Piepton und „Fertig!“ bis zum Tastendruck (max. 3 min). Die letzte Zeit wird gemerkt. |
 
 Die Oberfläche ist deutsch.
@@ -35,6 +35,26 @@ ist. Getestet mit LMS 9.1 und der Community-Firmware 9.0.1 auf dem Radio.
    Hauptmenü → *Wetter* → ganz unten *Ort ändern* → Ortsnamen eintippen →
    aus der Trefferliste wählen. Ohne Einstellung zeigt die Wetter-Uhr Glauchau.
 
+5. **Termine (optional)**
+   LMS-Weboberfläche → *Einstellungen* → *Plugins* → *Radio-Applets* → *Einstellungen*:
+   CalDAV-Adresse des Kalenders, Benutzer und Passwort eintragen. Beispiel Baïkal:
+
+   ```
+   http://mein-server:8099/dav.php/calendars/<benutzer>/<kalender>/
+   ```
+
+   Am besten einen eigenen Benutzer anlegen, der den Kalender nur lesen darf.
+   Der LMS fragt den Kalender alle 15 min ab (Basic- oder Digest-Anmeldung) und
+   lässt Serientermine vom Server auflösen. Ein reiner ICS-Link (z. B. die
+   iCal-Adresse von Google) geht nicht, weil dort Serientermine nicht aufgelöst sind.
+   Die Wetter-Uhr zeigt dann im Wechsel (alle 8 s) die Vorhersage und die
+   nächsten 6 Termine einzeilig (beim Abspielen 4), mit dem Drehrad blättert man von Hand.
+   Im Menü *Wetter* stehen die nächsten 5 Termine unten.
+
+   Die Zugangsdaten liegen nur in den LMS-Einstellungen. Die Termine selbst liefert
+   der LMS ohne Anmeldung unter `/radioapplets/termine.json` an das Radio aus,
+   also für jeden im Heimnetz lesbar.
+
 Die Wetter-Uhr trägt sich beim ersten Start selbst als Bildschirmschoner ein
 (bei Stopp und bei Wiedergabe). Ändern lässt sich das wie gewohnt unter
 *Einstellungen* → *Bildschirm* → *Bildschirmschoner*.
@@ -61,7 +81,8 @@ Plugin-Liste des LMS auf.
 ```
 applets/Wetter/        Wetter-Uhr (Lua, SqueezePlay)
 applets/Eieruhr/       Eieruhr (Lua, SqueezePlay)
-plugin/RadioApplets/   LMS-Plugin (Perl): bietet die Applets dem Applet-Installer an
+plugin/RadioApplets/   LMS-Plugin (Perl): bietet die Applets dem Applet-Installer an,
+                       holt die Termine (Calendar.pm, Einstellungen: Settings.pm)
 tools/build.py         baut Applet-Zips, Plugin-Zip (dist/) und repo.xml
 tools/mkicons.py       zeichnet die Wettersymbole (Pillow)
 dist/                  fertige Plugin-Zips, auf die repo.xml verweist

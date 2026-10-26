@@ -24,12 +24,12 @@ DATE = (2026, 1, 1, 0, 0, 0)
 REPO_URL = "https://github.com/Gtz187/squeezebox-applets"
 RAW_URL = "https://raw.githubusercontent.com/Gtz187/squeezebox-applets/main"
 
-PLUGIN_VERSION = "1.4"
+PLUGIN_VERSION = "1.5"
 
 APPLETS = [
 	# name, version, target (Regex auf System:getMachine()), Titel, Beschreibung
-	("Wetter", "1.3", "baby", "Wetter-Uhr",
-	 "Wetter (Open-Meteo) für einen wählbaren Ort als Menüpunkt und Bildschirmschoner, mit Sender/Titel und Eieruhr-Restzeit."),
+	("Wetter", "1.4", "baby", "Wetter-Uhr",
+	 "Wetter (Open-Meteo) für einen wählbaren Ort als Menüpunkt und Bildschirmschoner, mit Sender/Titel, Eieruhr-Restzeit und den nächsten Terminen."),
 	("Eieruhr", "1.1", "baby", "Eieruhr",
 	 "Küchentimer: Zeit per Rad einstellen, Piepton und „Fertig!“ am Ende."),
 ]
@@ -112,8 +112,8 @@ def write_repo(zip_path):
 		<plugin name="RadioApplets" version="{PLUGIN_VERSION}" minTarget="8.0" maxTarget="*">
 			<title lang="DE">Radio-Applets (Wetter-Uhr, Eieruhr)</title>
 			<title lang="EN">Radio applets (weather clock, kitchen timer)</title>
-			<desc lang="DE">Bietet Squeezebox Radios die Applets Wetter-Uhr und Eieruhr über den Applet-Installer an (Einstellungen → Erweitert → Applet-Installer).</desc>
-			<desc lang="EN">Offers the applets weather clock and kitchen timer to Squeezebox Radios via the applet installer (Settings → Advanced → Applet Installer). German UI.</desc>
+			<desc lang="DE">Bietet Squeezebox Radios die Applets Wetter-Uhr und Eieruhr über den Applet-Installer an (Einstellungen → Erweitert → Applet-Installer). Die Wetter-Uhr zeigt auf Wunsch die nächsten Termine aus einem CalDAV-Kalender.</desc>
+			<desc lang="EN">Offers the applets weather clock and kitchen timer to Squeezebox Radios via the applet installer (Settings → Advanced → Applet Installer). The weather clock can show upcoming events from a CalDAV calendar. German UI.</desc>
 			<changes lang="DE">{xml(changes)}</changes>
 			<creator>Götz Jacob</creator>
 			<category>hardware</category>

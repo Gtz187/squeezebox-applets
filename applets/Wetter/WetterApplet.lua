@@ -1,6 +1,9 @@
 --[[
 Wetter – zeigt Außentemperatur und Vorhersage von Open-Meteo für einen
 einstellbaren Ort (Menü „Ort ändern“, Suche über die Open-Meteo-Geocoding-API).
+Dazu die nächsten Termine, die das LMS-Plugin RadioApplets aus einem
+CalDAV-Kalender holt (/radioapplets/termine.json); im Bildschirmschoner
+wechseln sie sich mit der Vorhersage ab, das Rad blättert von Hand.
 --]]
 
 local tonumber, tostring, type, pcall, ipairs = tonumber, tostring, type, pcall, ipairs
@@ -47,6 +50,8 @@ local QUERY = "&current=is_day,temperature_2m,apparent_temperature,relative_humi
 local DEFAULT_PLACE = { name = "Glauchau", lat = 50.8197, lon = 12.5446 }
 
 local REFRESH = 15 * 60       -- Sekunden
+local TERMINE_REFRESH = 5 * 60
+local PAGE_TIME = 8           -- Sekunden je Seite (Vorhersage / Termine)
 
 local WHITE  = 0xFFFFFFFF
 local GREY   = 0x9A9A9AFF
@@ -72,6 +77,7 @@ local WMO = {
 -- von Menü und Bildschirmschoner gemeinsam genutzt
 local cache = { data = nil, fetched = 0, loading = false, listeners = {} }
 local place = DEFAULT_PLACE
+local termine = { list = nil, fetched = 0, loading = false }
 
 
 -- Mondphase 0–7 (0 = Neumond, 4 = Vollmond), gerechnet ab dem Neumond
@@ -166,6 +172,72 @@ fetch = function(force)
 		end
 	end, 'GET', "http://" .. HOST .. path)
 	http:fetch(req)
+end
+
+-- nächste Termine vom LMS, an den das Radio gerade angeschlossen ist
+local function fetchTermine(force)
+	if termine.loading then return end
+	if not force and os.time() - termine.fetched < TERMINE_REFRESH then return end
+
+	local player = Player:getLocalPlayer()
+	local server = player and player:getSlimServer()
+	local ip, port = server and server:getIpPort()
+	if not ip then return end
+
+	termine.loading = true
+	local http = SocketHttp(jnt, ip, port, "Termine")
+	local req = RequestHttp(function(chunk, err)
+		if err then
+			log:warn("Termine: ", err)
+			termine.loading = false
+		elseif chunk then
+			local ok, obj = pcall(json.decode, chunk)
+			-- ohne Plugin oder Kalender bleibt die Liste leer
+			termine.list = ok and type(obj) == "table" and type(obj.events) == "table" and obj.events or nil
+			termine.fetched = os.time()
+			termine.loading = false
+			for _, f in ipairs(cache.listeners) do pcall(f, cache.data) end
+		end
+	end, 'GET', "http://" .. ip .. ":" .. port .. "/radioapplets/termine.json")
+	http:fetch(req)
+end
+
+-- die nächsten n Termine, die noch nicht vorbei sind
+local function nextTermine(n)
+	local res = {}
+	local now = os.time()
+	for _, e in ipairs(termine.list or {}) do
+		if type(e.start) == "number" and type(e.ende) == "number" and e.ende > now then
+			res[#res + 1] = e
+			if #res == n then break end
+		end
+	end
+	return res
+end
+
+local function midnight(t)
+	local d = os.date("*t", t)
+	d.hour, d.min, d.sec = 0, 0, 0
+	return os.time(d)
+end
+
+-- "Heute 18:00", "Morgen", "Mi 5.11. 08:30"; laufende mehrtägige Termine stehen unter „Heute“
+local function terminTag(e)
+	local today = midnight(os.time())
+	local day = math.max(midnight(e.start), today)
+	local diff = math.floor((day - today) / 86400 + 0.5)
+	local s
+	if diff == 0 then
+		s = "Heute"
+	elseif diff == 1 then
+		s = "Morgen"
+	else
+		s = WOCHENTAG[tonumber(os.date("%w", day)) + 1] .. " " .. tonumber(os.date("%d", day)) .. "." .. tonumber(os.date("%m", day)) .. "."
+	end
+	if not e.allday and e.start >= today then
+		s = s .. " " .. os.date("%H:%M", e.start)
+	end
+	return s
 end
 
 local function listen(f)
@@ -322,6 +394,9 @@ function _menuItems(self, menu, d)
 		end
 		items[#items + 1] = { text = "Stand " .. os.date("%H:%M", cache.fetched) .. " · Open-Meteo", style = 'item_info' }
 	end
+	for _, e in ipairs(nextTermine(5)) do
+		items[#items + 1] = { text = terminTag(e) .. "  " .. (e.title or ""), style = 'item_info' }
+	end
 	items[#items + 1] = {
 		text = "Aktualisieren",
 		callback = function()
@@ -355,6 +430,7 @@ function menuShow(self, menuItem)
 	window:addListener(EVENT_WINDOW_POP, function()
 		unlisten(listener)
 	end)
+	fetchTermine(false)
 	-- Eieruhr-Zeile mitzählen lassen
 	local ticking = false
 	window:addTimer(1000, function()
@@ -475,8 +551,17 @@ function _render(self)
 	-- spielt Musik, weicht der dritte Vorhersagetag der Senderzeile
 	local station, song = nowPlaying()
 	self.playing = station and (station .. song)
+	-- Termine einzeilig in halber Höhe der Vorhersagezeilen
+	local list = self.page == "termine" and nextTermine(station and 4 or 6) or {}
+	for i, e in ipairs(list) do
+		local y = 126 + (i - 1) * 18
+		local tag = terminTag(e)
+		text(img, f.termin, ORANGE, tag, 10, y)
+		local x = 10 + f.termin:width(tag) + 8
+		text(img, f.small, WHITE, fit(f.small, e.title or "", W - 10 - x), x, y)
+	end
 	local dd = d.daily
-	for i = 1, station and 2 or 3 do
+	for i = 1, #list > 0 and 0 or (station and 2 or 3) do
 		if dd.time and dd.time[i] then
 			local y = 128 + (i - 1) * 36
 			-- "Morgen" ist zu breit, ab Tag 2 Wochentag
@@ -526,6 +611,7 @@ function openScreensaver(self, menuItem)
 		row     = Font:load("fonts/FreeSans.ttf", 16),
 		rowBold = Font:load("fonts/FreeSansBold.ttf", 20),
 		timer   = Font:load("fonts/FreeSansBold.ttf", 28),
+		termin  = Font:load("fonts/FreeSansBold.ttf", 15),
 	}
 
 	local window = Window("window")
@@ -533,9 +619,31 @@ function openScreensaver(self, menuItem)
 	window:addWidget(self.icon)
 	window:setShowFrameworkWidgets(false)
 
+	-- Vorhersage und Termine wechseln sich ab, das Rad blättert von Hand
+	self.page = "wetter"
+	local pageAge = 0
+	local function flip()
+		pageAge = 0
+		if self.page == "wetter" and #nextTermine(1) > 0 then
+			self.page = "termine"
+		else
+			self.page = "wetter"
+		end
+		self:_refreshScreen()
+	end
+	window:addListener(EVENT_SCROLL, function()
+		flip()
+		return EVENT_CONSUME
+	end)
+
 	local lastMin = os.date("%H:%M")
 	local ticking = false
 	window:addTimer(1000, function()
+		pageAge = pageAge + 1
+		if pageAge >= PAGE_TIME and (self.page == "termine" or #nextTermine(1) > 0) then
+			flip()
+			return
+		end
 		local m = os.date("%H:%M")
 		-- auch einmal nach dem Ende der Eieruhr, damit die Restzeit verschwindet
 		local running = appletManager:callService("eieruhrStatus") ~= nil
@@ -544,6 +652,7 @@ function openScreensaver(self, menuItem)
 		if m ~= lastMin then
 			lastMin = m
 			fetch(false)
+			fetchTermine(false)
 			self:_refreshScreen()
 		elseif running or wasTicking then
 			self:_refreshScreen()
@@ -560,9 +669,11 @@ function openScreensaver(self, menuItem)
 	end)
 
 	fetch(false)
+	fetchTermine(false)
 
 	local manager = appletManager:getAppletInstance("ScreenSavers")
-	manager:screensaverWindow(window, _, _, _, 'Wetter')
+	-- Drehrad durchlassen (blättert), alles andere beendet den Bildschirmschoner
+	manager:screensaverWindow(window, true, _, _, 'Wetter')
 	window:show(Window.transitionFadeIn)
 	self.window = window
 end

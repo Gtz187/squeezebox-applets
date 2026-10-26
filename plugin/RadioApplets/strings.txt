@@ -5,3 +5,23 @@ PLUGIN_RADIOAPPLETS
 PLUGIN_RADIOAPPLETS_DESC
 	DE	Bietet den Squeezebox Radios eigene Applets (Wetter-Uhr, Eieruhr) über den Applet-Installer an.
 	EN	Offers custom applets (weather clock, kitchen timer) to Squeezebox Radios via the applet installer.
+
+PLUGIN_RADIOAPPLETS_CAL_URL
+	DE	Kalender (CalDAV-Adresse)
+	EN	Calendar (CalDAV URL)
+
+PLUGIN_RADIOAPPLETS_CAL_URL_DESC
+	DE	Die Wetter-Uhr zeigt abwechselnd mit der Vorhersage die nächsten Termine aus diesem Kalender, z. B. http://server:8099/dav.php/calendars/benutzer/kalender/ (Baïkal). Am besten einen Benutzer nehmen, der den Kalender nur lesen darf. Leer lassen = keine Termine.
+	EN	The weather clock alternates the forecast with the next events from this calendar, e.g. http://server:8099/dav.php/calendars/user/calendar/ (Baïkal). Preferably use a read-only user. Leave empty for no events.
+
+PLUGIN_RADIOAPPLETS_CAL_USER
+	DE	Benutzer
+	EN	User
+
+PLUGIN_RADIOAPPLETS_CAL_PASS
+	DE	Passwort
+	EN	Password
+
+PLUGIN_RADIOAPPLETS_CAL_STATUS
+	DE	Status
+	EN	Status

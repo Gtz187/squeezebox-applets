@@ -6,18 +6,18 @@
 		<title lang="EN">Squeezebox Radio applets</title>
 	</details>
 	<plugins>
-		<plugin name="RadioApplets" version="1.4" minTarget="8.0" maxTarget="*">
+		<plugin name="RadioApplets" version="1.5" minTarget="8.0" maxTarget="*">
 			<title lang="DE">Radio-Applets (Wetter-Uhr, Eieruhr)</title>
 			<title lang="EN">Radio applets (weather clock, kitchen timer)</title>
-			<desc lang="DE">Bietet Squeezebox Radios die Applets Wetter-Uhr und Eieruhr über den Applet-Installer an (Einstellungen → Erweitert → Applet-Installer).</desc>
-			<desc lang="EN">Offers the applets weather clock and kitchen timer to Squeezebox Radios via the applet installer (Settings → Advanced → Applet Installer). German UI.</desc>
-			<changes lang="DE">Wetter-Uhr 1.3
+			<desc lang="DE">Bietet Squeezebox Radios die Applets Wetter-Uhr und Eieruhr über den Applet-Installer an (Einstellungen → Erweitert → Applet-Installer). Die Wetter-Uhr zeigt auf Wunsch die nächsten Termine aus einem CalDAV-Kalender.</desc>
+			<desc lang="EN">Offers the applets weather clock and kitchen timer to Squeezebox Radios via the applet installer (Settings → Advanced → Applet Installer). The weather clock can show upcoming events from a CalDAV calendar. German UI.</desc>
+			<changes lang="DE">Wetter-Uhr 1.4
 Eieruhr 1.1</changes>
 			<creator>Götz Jacob</creator>
 			<category>hardware</category>
 			<link>https://github.com/Gtz187/squeezebox-applets</link>
-			<url>https://raw.githubusercontent.com/Gtz187/squeezebox-applets/main/dist/RadioApplets-1.4.zip</url>
-			<sha>fafb9eef1666f4b28ebd3c93749f81ec4b048187</sha>
+			<url>https://raw.githubusercontent.com/Gtz187/squeezebox-applets/main/dist/RadioApplets-1.5.zip</url>
+			<sha>a92e01ecd293e2e576d58a0b01ebef91251dd23f</sha>
 		</plugin>
 	</plugins>
 </extensions>
