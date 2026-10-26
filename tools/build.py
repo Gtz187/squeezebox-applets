@@ -24,7 +24,7 @@ DATE = (2026, 1, 1, 0, 0, 0)
 REPO_URL = "https://github.com/Gtz187/squeezebox-applets"
 RAW_URL = "https://raw.githubusercontent.com/Gtz187/squeezebox-applets/main"
 
-PLUGIN_VERSION = "1.2"
+PLUGIN_VERSION = "1.3"
 
 APPLETS = [
 	# name, version, target (Regex auf System:getMachine()), Titel, Beschreibung
@@ -47,11 +47,18 @@ def zip_dir(src, out):
 		# Ordner zuerst: der Applet-Installer des Radios legt sie nur an, wenn ihr
 		# Eintrag vor den Dateien kommt, und stolpert, wenn der letzte Eintrag ein Ordner ist
 		# feste Zeitstempel: gleicher Inhalt ergibt gleiche Zip und gleiche SHA1
+		# und Unix-Rechte setzen: ohne sie legt Archive::Zip im LMS die Ordner mit
+		# 0600 an und kann danach nichts hineinentpacken
 		for d in dirs:
-			z.writestr(zipfile.ZipInfo(d, DATE), "")
+			info = zipfile.ZipInfo(d, DATE)
+			info.external_attr = (0o40755 << 16) | 0x10
+			z.writestr(info, "")
 		for f in files:
+			info = zipfile.ZipInfo(f, DATE)
+			info.external_attr = 0o100644 << 16
+			info.compress_type = zipfile.ZIP_DEFLATED
 			with open(os.path.join(src, f), "rb") as fh:
-				z.writestr(zipfile.ZipInfo(f, DATE), fh.read(), zipfile.ZIP_DEFLATED)
+				z.writestr(info, fh.read())
 
 
 def sha1(path):
