@@ -1,0 +1,7 @@
+WETTER_MENU
+	DE	Wetter
+	EN	Weather
+
+WETTER_SCREENSAVER
+	DE	Wetter-Uhr
+	EN	Weather clock

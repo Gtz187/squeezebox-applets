@@ -1,0 +1,7 @@
+PLUGIN_RADIOAPPLETS
+	DE	Radio-Applets
+	EN	Radio applets
+
+PLUGIN_RADIOAPPLETS_DESC
+	DE	Bietet den Squeezebox Radios eigene Applets (Wetter-Uhr, Eieruhr) über den Applet-Installer an.
+	EN	Offers custom applets (weather clock, kitchen timer) to Squeezebox Radios via the applet installer.

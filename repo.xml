@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- erzeugt von tools/build.py, nicht von Hand bearbeiten -->
+<extensions>
+	<details>
+		<title lang="DE">Squeezebox-Radio-Applets</title>
+		<title lang="EN">Squeezebox Radio applets</title>
+	</details>
+	<plugins>
+		<plugin name="RadioApplets" version="1.2" minTarget="8.0" maxTarget="*">
+			<title lang="DE">Radio-Applets (Wetter-Uhr, Eieruhr)</title>
+			<title lang="EN">Radio applets (weather clock, kitchen timer)</title>
+			<desc lang="DE">Bietet Squeezebox Radios die Applets Wetter-Uhr und Eieruhr über den Applet-Installer an (Einstellungen → Erweitert → Applet-Installer).</desc>
+			<desc lang="EN">Offers the applets weather clock and kitchen timer to Squeezebox Radios via the applet installer (Settings → Advanced → Applet Installer). German UI.</desc>
+			<changes lang="DE">Wetter-Uhr 1.2
+Eieruhr 1.1</changes>
+			<creator>Götz Jacob</creator>
+			<category>hardware</category>
+			<link>https://github.com/Gtz187/squeezebox-applets</link>
+			<url>https://raw.githubusercontent.com/Gtz187/squeezebox-applets/main/dist/RadioApplets-1.2.zip</url>
+			<sha>ed927df4aa470859ec3228b6a96d574ae25b5f61</sha>
+		</plugin>
+	</plugins>
+</extensions>

@@ -1,0 +1,15 @@
+<?xml version='1.0' standalone='yes'?>
+<extension>
+  <name>PLUGIN_RADIOAPPLETS</name>
+  <module>Plugins::RadioApplets::Plugin</module>
+  <version>1.2</version>
+  <description>PLUGIN_RADIOAPPLETS_DESC</description>
+  <creator>Götz Jacob</creator>
+  <defaultState>enabled</defaultState>
+  <targetApplication>
+    <id>SqueezeCenter</id>
+    <minVersion>8.0</minVersion>
+    <maxVersion>*</maxVersion>
+  </targetApplication>
+  <type>2</type>
+</extension>
