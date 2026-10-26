@@ -181,8 +181,10 @@ local function fetchTermine(force)
 
 	local player = Player:getLocalPlayer()
 	local server = player and player:getSlimServer()
-	local ip, port = server and server:getIpPort()
-	if not ip then return end
+	-- nicht "server and server:getIpPort()": and kürzt auf einen Wert, port wäre nil
+	local ip, port
+	if server then ip, port = server:getIpPort() end
+	if not ip or not port then return end
 
 	termine.loading = true
 	local http = SocketHttp(jnt, ip, port, "Termine")

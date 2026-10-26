@@ -2,7 +2,7 @@
 <extension>
   <name>PLUGIN_RADIOAPPLETS</name>
   <module>Plugins::RadioApplets::Plugin</module>
-  <version>1.5</version>
+  <version>1.6</version>
   <description>PLUGIN_RADIOAPPLETS_DESC</description>
   <creator>Götz Jacob</creator>
   <optionsURL>plugins/RadioApplets/settings/basic.html</optionsURL>
