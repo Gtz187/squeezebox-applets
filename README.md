@@ -34,6 +34,10 @@ ist. Getestet mit LMS 9.1 und der Community-Firmware 9.0.1 auf dem Radio.
 4. **Ort einstellen**
    Hauptmenü → *Wetter* → ganz unten *Ort ändern* → Ortsnamen eintippen →
    aus der Trefferliste wählen. Ohne Einstellung zeigt die Wetter-Uhr Glauchau.
+   Alternativ in der LMS-Weboberfläche → *Einstellungen* → *Plugins* →
+   *Radio-Applets* → *Einstellungen* → *Ort* (Name oder Koordinaten). Das Radio
+   übernimmt ihn innerhalb einer Minute; am Radio lässt er sich danach weiter ändern.
+   Dort steht auch, wie lange Vorhersage und Termine im Wechsel stehen.
 
 5. **Termine (optional)**
    LMS-Weboberfläche → *Einstellungen* → *Plugins* → *Radio-Applets* → *Einstellungen*:
@@ -44,10 +48,10 @@ ist. Getestet mit LMS 9.1 und der Community-Firmware 9.0.1 auf dem Radio.
    ```
 
    Am besten einen eigenen Benutzer anlegen, der den Kalender nur lesen darf.
-   Der LMS fragt den Kalender alle 15 min ab (Basic- oder Digest-Anmeldung) und
+   Der LMS fragt den Kalender alle 15 min ab (60 Tage voraus, einstellbar) (Basic- oder Digest-Anmeldung) und
    lässt Serientermine vom Server auflösen. Ein reiner ICS-Link (z. B. die
    iCal-Adresse von Google) geht nicht, weil dort Serientermine nicht aufgelöst sind.
-   Die Wetter-Uhr zeigt dann im Wechsel (alle 8 s) die Vorhersage und die
+   Die Wetter-Uhr zeigt dann im Wechsel (alle 8 s, einstellbar) die Vorhersage und die
    nächsten 6 Termine einzeilig (beim Abspielen 4), mit dem Drehrad blättert man von Hand.
    Im Menü *Wetter* stehen die nächsten 5 Termine unten.
 
@@ -82,7 +86,8 @@ Plugin-Liste des LMS auf.
 applets/Wetter/        Wetter-Uhr (Lua, SqueezePlay)
 applets/Eieruhr/       Eieruhr (Lua, SqueezePlay)
 plugin/RadioApplets/   LMS-Plugin (Perl): bietet die Applets dem Applet-Installer an,
-                       holt die Termine (Calendar.pm, Einstellungen: Settings.pm)
+                       holt die Termine (Calendar.pm), Ort/Wechselzeit (Config.pm),
+                       Einstellungsseite: Settings.pm
 tools/build.py         baut Applet-Zips, Plugin-Zip (dist/) und repo.xml
 tools/mkicons.py       zeichnet die Wettersymbole (Pillow)
 dist/                  fertige Plugin-Zips, auf die repo.xml verweist

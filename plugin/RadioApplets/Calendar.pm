@@ -20,8 +20,9 @@ use Slim::Utils::Log;
 use Slim::Utils::Prefs;
 use Slim::Utils::Timers;
 
+use Plugins::RadioApplets::Config;
+
 use constant REFRESH => 15 * 60;   # Sekunden
-use constant DAYS    => 60;        # so weit voraus wird gesucht
 use constant MAX     => 10;        # so viele Termine bekommt das Radio
 
 my $prefs = preferences('plugin.radioapplets');
@@ -32,8 +33,9 @@ my $status  = '';
 my $fetched = 0;
 
 sub init {
-	$prefs->init({ calUrl => '', calUser => '', calPass => '' });
-	$prefs->setChange(\&refresh, qw(calUrl calUser calPass));
+	$prefs->init({ calUrl => '', calUser => '', calPass => '', calDays => 60 });
+	$prefs->setValidate({ validator => 'intlimit', low => 1, high => 366 }, 'calDays');
+	$prefs->setChange(\&refresh, qw(calUrl calUser calPass calDays));
 	refresh();
 }
 
@@ -44,6 +46,7 @@ sub json {
 		status  => $status,
 		fetched => $fetched,
 		events  => $events,
+		config  => Plugins::RadioApplets::Config::config(),
 	});
 }
 
@@ -75,7 +78,7 @@ sub _report {
 	my ($url, $challenge) = @_;
 
 	my $now = time();
-	my $range = sprintf('start="%s" end="%s"', _utc($now), _utc($now + DAYS * 86400));
+	my $range = sprintf('start="%s" end="%s"', _utc($now), _utc($now + $prefs->get('calDays') * 86400));
 	my $body = <<"EOF";
 <?xml version="1.0" encoding="utf-8"?>
 <C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">

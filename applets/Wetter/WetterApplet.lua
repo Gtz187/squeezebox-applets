@@ -4,6 +4,8 @@ einstellbaren Ort (Menü „Ort ändern“, Suche über die Open-Meteo-Geocoding
 Dazu die nächsten Termine, die das LMS-Plugin RadioApplets aus einem
 CalDAV-Kalender holt (/radioapplets/termine.json); im Bildschirmschoner
 wechseln sie sich mit der Vorhersage ab, das Rad blättert von Hand.
+Ort und Wechselzeit lassen sich auch in den LMS-Einstellungen des Plugins
+vorgeben; sie kommen mit den Terminen (Feld config).
 --]]
 
 local tonumber, tostring, type, pcall, ipairs = tonumber, tostring, type, pcall, ipairs
@@ -50,8 +52,8 @@ local QUERY = "&current=is_day,temperature_2m,apparent_temperature,relative_humi
 local DEFAULT_PLACE = { name = "Glauchau", lat = 50.8197, lon = 12.5446 }
 
 local REFRESH = 15 * 60       -- Sekunden
-local TERMINE_REFRESH = 5 * 60
-local PAGE_TIME = 8           -- Sekunden je Seite (Vorhersage / Termine)
+local TERMINE_REFRESH = 60    -- holt auch die Einstellungen aus dem LMS
+local pageTime = 8            -- Sekunden je Seite (Vorhersage / Termine), 0 = nur per Rad
 
 local WHITE  = 0xFFFFFFFF
 local GREY   = 0x9A9A9AFF
@@ -78,6 +80,8 @@ local WMO = {
 local cache = { data = nil, fetched = 0, loading = false, listeners = {} }
 local place = DEFAULT_PLACE
 local termine = { list = nil, fetched = 0, loading = false }
+-- zuletzt geöffnete Instanz, für Einstellungen aus dem LMS
+local instance
 
 
 -- Mondphase 0–7 (0 = Neumond, 4 = Vollmond), gerechnet ab dem Neumond
@@ -196,6 +200,9 @@ local function fetchTermine(force)
 			local ok, obj = pcall(json.decode, chunk)
 			-- ohne Plugin oder Kalender bleibt die Liste leer
 			termine.list = ok and type(obj) == "table" and type(obj.events) == "table" and obj.events or nil
+			if ok and type(obj) == "table" and type(obj.config) == "table" and instance then
+				instance:_applyConfig(obj.config)
+			end
 			termine.fetched = os.time()
 			termine.loading = false
 			for _, f in ipairs(cache.listeners) do pcall(f, cache.data) end
@@ -264,6 +271,21 @@ function _loadPlace(self)
 			place = sp
 			cache.data = nil
 		end
+	end
+end
+
+-- Vorgaben aus den LMS-Einstellungen; ein dort gesetzter Ort gilt nur,
+-- wenn er neuer ist als der zuletzt übernommene (stamp)
+function _applyConfig(self, c)
+	if type(c.pageTime) == "number" then
+		pageTime = c.pageTime
+	end
+	local p = c.place
+	if type(p) == "table" and type(p.name) == "string" and type(p.lat) == "number"
+		and type(p.lon) == "number" and type(p.stamp) == "number"
+		and p.stamp ~= self:getSettings().placeStamp then
+		self:getSettings().placeStamp = p.stamp
+		self:_setPlace({ name = p.name, lat = p.lat, lon = p.lon })
 	end
 end
 
@@ -417,6 +439,7 @@ function _menuItems(self, menu, d)
 end
 
 function menuShow(self, menuItem)
+	instance = self
 	self:_loadPlace()
 	local window = Window("text_list", "Wetter " .. place.name)
 	local menu = SimpleMenu("menu")
@@ -603,6 +626,7 @@ function _refreshScreen(self)
 end
 
 function openScreensaver(self, menuItem)
+	instance = self
 	self:_loadPlace()
 	self.sw, self.sh = Framework:getScreenSize()
 	self.fonts = {
@@ -642,7 +666,7 @@ function openScreensaver(self, menuItem)
 	local ticking = false
 	window:addTimer(1000, function()
 		pageAge = pageAge + 1
-		if pageAge >= PAGE_TIME and (self.page == "termine" or #nextTermine(1) > 0) then
+		if pageTime > 0 and pageAge >= pageTime and (self.page == "termine" or #nextTermine(1) > 0) then
 			flip()
 			return
 		end

@@ -1,5 +1,22 @@
 [% PROCESS settings/header.html %]
 
+	<h3>[% "PLUGIN_RADIOAPPLETS_WETTER" | string %]</h3>
+
+	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_PLACE" desc="PLUGIN_RADIOAPPLETS_PLACE_DESC" %]
+		<input type="text" class="stdedit" name="pref_place" value="[% prefs.pref_place | html %]" size="40" autocomplete="off">
+		<div>[% placeStatus | html %]</div>
+	[% END %]
+
+	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_PAGETIME" desc="PLUGIN_RADIOAPPLETS_PAGETIME_DESC" %]
+		<select class="stdedit" name="pref_pageTime">
+		[% FOREACH t IN [0, 5, 8, 10, 15, 20, 30, 60] %]
+			<option value="[% t %]" [% IF prefs.pref_pageTime == t %]selected[% END %]>[% IF t %][% t %] s[% ELSE %][% "PLUGIN_RADIOAPPLETS_PAGETIME_OFF" | string %][% END %]</option>
+		[% END %]
+		</select>
+	[% END %]
+
+	<h3>[% "PLUGIN_RADIOAPPLETS_KALENDER" | string %]</h3>
+
 	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_CAL_URL" desc="PLUGIN_RADIOAPPLETS_CAL_URL_DESC" %]
 		<input type="text" class="stdedit" name="pref_calUrl" value="[% prefs.pref_calUrl | html %]" size="70" autocomplete="off">
 	[% END %]
@@ -10,6 +27,10 @@
 
 	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_CAL_PASS" desc="" %]
 		<input type="password" class="stdedit" name="pref_calPass" value="[% prefs.pref_calPass | html %]" size="30" autocomplete="new-password">
+	[% END %]
+
+	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_CAL_DAYS" desc="PLUGIN_RADIOAPPLETS_CAL_DAYS_DESC" %]
+		<input type="number" class="stdedit" name="pref_calDays" value="[% prefs.pref_calDays | html %]" min="1" max="366" size="5">
 	[% END %]
 
 	[% WRAPPER setting title="PLUGIN_RADIOAPPLETS_CAL_STATUS" desc="" %]

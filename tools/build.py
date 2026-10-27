@@ -24,11 +24,11 @@ DATE = (2026, 1, 1, 0, 0, 0)
 REPO_URL = "https://github.com/Gtz187/squeezebox-applets"
 RAW_URL = "https://raw.githubusercontent.com/Gtz187/squeezebox-applets/main"
 
-PLUGIN_VERSION = "1.6"
+PLUGIN_VERSION = "1.7"
 
 APPLETS = [
 	# name, version, target (Regex auf System:getMachine()), Titel, Beschreibung
-	("Wetter", "1.5", "baby", "Wetter-Uhr",
+	("Wetter", "1.6", "baby", "Wetter-Uhr",
 	 "Wetter (Open-Meteo) für einen wählbaren Ort als Menüpunkt und Bildschirmschoner, mit Sender/Titel, Eieruhr-Restzeit und den nächsten Terminen."),
 	("Eieruhr", "1.1", "baby", "Eieruhr",
 	 "Küchentimer: Zeit per Rad einstellen, Piepton und „Fertig!“ am Ende."),

@@ -5,7 +5,7 @@ package Plugins::RadioApplets::Plugin;
 # (beides erzeugt tools/build.py). Die Liste wird bei jeder
 # Abfrage neu gelesen, neue Versionen brauchen also keinen LMS-Neustart.
 # Dazu liefert es unter /radioapplets/termine.json die nächsten Termine
-# für die Wetter-Uhr (siehe Calendar.pm).
+# und die Einstellungen für die Wetter-Uhr (siehe Calendar.pm, Config.pm).
 
 use strict;
 use base qw(Slim::Plugin::Base);
@@ -16,6 +16,7 @@ use File::Spec::Functions qw(catdir catfile);
 use Slim::Utils::Log;
 
 use Plugins::RadioApplets::Calendar;
+use Plugins::RadioApplets::Config;
 
 my $log = Slim::Utils::Log->addLogCategory({
 	category     => 'plugin.radioapplets',
@@ -36,6 +37,7 @@ sub initPlugin {
 		Plugins::RadioApplets::Settings->new;
 	}
 
+	Plugins::RadioApplets::Config::init();
 	Plugins::RadioApplets::Calendar::init();
 
 	Slim::Control::Jive::registerExtensionProvider('RadioApplets', \&_provider);

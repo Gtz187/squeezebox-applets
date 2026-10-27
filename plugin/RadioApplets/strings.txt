@@ -25,3 +25,39 @@ PLUGIN_RADIOAPPLETS_CAL_PASS
 PLUGIN_RADIOAPPLETS_CAL_STATUS
 	DE	Status
 	EN	Status
+
+PLUGIN_RADIOAPPLETS_WETTER
+	DE	Wetter-Uhr
+	EN	Weather clock
+
+PLUGIN_RADIOAPPLETS_KALENDER
+	DE	Termine
+	EN	Events
+
+PLUGIN_RADIOAPPLETS_PLACE
+	DE	Ort
+	EN	Place
+
+PLUGIN_RADIOAPPLETS_PLACE_DESC
+	DE	Ortsname (z. B. Glauchau) oder Koordinaten (50.8197, 12.5446). Das Radio übernimmt den Ort innerhalb einer Minute; danach kann er dort über „Ort ändern“ weiter angepasst werden. Leer lassen = Ort nur am Radio wählen.
+	EN	Place name (e.g. Glauchau) or coordinates (50.8197, 12.5446). The radio picks it up within a minute; it can still be changed there via "Ort ändern". Leave empty to choose the place on the radio only.
+
+PLUGIN_RADIOAPPLETS_PAGETIME
+	DE	Wechsel Vorhersage/Termine
+	EN	Switch forecast/events
+
+PLUGIN_RADIOAPPLETS_PAGETIME_DESC
+	DE	Wie lange der Bildschirmschoner die Vorhersage bzw. die Termine zeigt, bevor er umschaltet. Mit dem Drehrad lässt sich immer von Hand blättern.
+	EN	How long the screensaver shows the forecast or the events before switching. The wheel always switches by hand.
+
+PLUGIN_RADIOAPPLETS_PAGETIME_OFF
+	DE	nicht automatisch
+	EN	not automatically
+
+PLUGIN_RADIOAPPLETS_CAL_DAYS
+	DE	Tage im Voraus
+	EN	Days ahead
+
+PLUGIN_RADIOAPPLETS_CAL_DAYS_DESC
+	DE	So weit voraus werden Termine gesucht (1–366).
+	EN	How far ahead to look for events (1–366).
